@@ -1,0 +1,112 @@
+<div component="userProfile" 
+     prop-name="!:string" 
+     prop-age="!:number:min:18|max:120" 
+     prop-role=":string" 
+     prop-skills="!:array" 
+     prop-projects="!:array">
+  
+  <style>
+    :component {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    :component h1 {
+      color: #333;
+    }
+    :component .skills-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    :component .skill-tag {
+      background-color: #e0e0e0;
+      padding: 5px 10px;
+      border-radius: 15px;
+      font-size: 0.9em;
+    }
+    :component .projects-list {
+      margin-top: 20px;
+    }
+    :component .project-item {
+      margin-bottom: 10px;
+      padding: 10px;
+      background-color: #f0f0f0;
+      border-radius: 5px;
+    }
+  </style>
+
+  <h1>{{ name | toUpperCase }} ({{ age }})</h1>
+  <p>Role: {{ role }}</p>
+
+  <h2>Skills</h2>
+  <div class="skills-list">
+    @for(skill in skills)
+      <span class="skill-tag">{{ skill }}</span>
+    @endfor
+  </div>
+
+  <h2>Projects</h2>
+  <div class="projects-list">
+    @for(project in projects)
+      <div class="project-item">
+        <h3>{{ project.name }}</h3>
+        <p>Status: 
+          @switch(project.status)
+            @case('Completed') 
+              <span style="color: green;">Completed</span>
+            @case('In Progress')
+              <span style="color: orange;">In Progress</span>
+            @default
+              <span style="color: blue;">{{ project.status }}</span>
+          @endswitch
+        </p>
+      </div>
+    @endfor
+  </div>
+
+  <subcomponent name="experienceYears">
+    <p>Years of Experience: {{ calculateExperience() }}</p>
+  </subcomponent>
+
+  <script component-script="init">
+    this.careerStartYear = 2010;
+    console.log(`Initializing profile for ${this.name}`);
+  </script>
+
+  <script component-script="methods">
+    {
+      "calculateExperience": function() {
+        const currentYear = new Date().getFullYear();
+        return currentYear - this.careerStartYear;
+      },
+      "logSkills": function() {
+        console.log(`${this.name}'s skills: ${this.skills.join(', ')}`);
+      }
+    }
+  </script>
+
+  <script component-script="computed">
+    {
+      "seniorityLevel": function() {
+        if (this.age < 30) return "Junior";
+        if (this.age < 40) return "Mid-level";
+        return "Senior";
+      }
+    }
+  </script>
+
+  <script component-script="watch">
+    {
+      "age": function(newValue, oldValue) {
+        console.log(`${this.name}'s age updated from ${oldValue} to ${newValue}`);
+      }
+    }
+  </script>
+
+  <p>Seniority Level: {{ seniorityLevel }}</p>
+  <button data-method="logSkills">Log Skills</button>
+</div>
