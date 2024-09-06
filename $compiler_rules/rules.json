@@ -1,0 +1,167 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Advanced Component System Schema",
+    "type": "object",
+    "properties": {
+      "componentDefinition": {
+        "type": "object",
+        "properties": {
+          "tag": { "type": "string", "enum": ["div"] },
+          "attributes": {
+            "type": "object",
+            "properties": {
+              "component": { "type": "string" },
+              "props": {
+                "type": "object",
+                "patternProperties": {
+                  "^prop-": {
+                    "type": "string",
+                    "pattern": "^(!)?([^:]+)?(:(string|number|boolean|array|object))?(:(([a-zA-Z]+:[^|]+\\|?)+))?$"
+                  }
+                }
+              }
+            },
+            "required": ["component"]
+          },
+          "children": { "$ref": "#/definitions/childElements" }
+        },
+        "required": ["tag", "attributes"]
+      },
+      "expressions": {
+        "type": "object",
+        "properties": {
+          "syntax": { "type": "string", "pattern": "^{{.*}}$" },
+          "allowedContent": {
+            "type": "array",
+            "items": {
+              "enum": ["propReference", "methodCall", "computedProperty", "helperFunction"]
+            }
+          }
+        }
+      },
+      "controlStructures": {
+        "type": "object",
+        "properties": {
+          "conditionals": {
+            "type": "object",
+            "properties": {
+              "if": {
+                "type": "object",
+                "properties": {
+                  "openTag": { "type": "string", "const": "@if(" },
+                  "closeTag": { "type": "string", "const": "@endif" },
+                  "elseTag": { "type": "string", "const": "@else" },
+                  "condition": { "type": "string" }
+                }
+              },
+              "switch": {
+                "type": "object",
+                "properties": {
+                  "openTag": { "type": "string", "const": "@switch(" },
+                  "closeTag": { "type": "string", "const": "@endswitch" },
+                  "caseTag": { "type": "string", "const": "@case(" },
+                  "defaultTag": { "type": "string", "const": "@default" }
+                }
+              }
+            }
+          },
+          "loops": {
+            "type": "object",
+            "properties": {
+              "for": {
+                "type": "object",
+                "properties": {
+                  "openTag": { "type": "string", "const": "@for(" },
+                  "closeTag": { "type": "string", "const": "@endfor" },
+                  "syntax": { "type": "string", "pattern": "^[a-zA-Z_][a-zA-Z0-9_]* in .*$" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "subcomponents": {
+        "type": "object",
+        "properties": {
+          "tag": { "type": "string", "const": "subcomponent" },
+          "attributes": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" }
+            },
+            "required": ["name"]
+          },
+          "children": { "$ref": "#/definitions/childElements" }
+        }
+      },
+      "styling": {
+        "type": "object",
+        "properties": {
+          "tag": { "type": "string", "const": "style" },
+          "scopedSelector": { "type": "string", "const": ":component" }
+        }
+      },
+      "scripts": {
+        "type": "object",
+        "properties": {
+          "tag": { "type": "string", "const": "script" },
+          "attributes": {
+            "type": "object",
+            "properties": {
+              "component-script": { 
+                "type": "string", 
+                "enum": ["init", "methods", "computed", "watch"] 
+              }
+            },
+            "required": ["component-script"]
+          },
+          "content": {
+            "type": "object",
+            "properties": {
+              "init": { "type": "string" },
+              "methods": { "type": "object" },
+              "computed": { "type": "object" },
+              "watch": { "type": "object" }
+            }
+          }
+        }
+      },
+      "eventHandling": {
+        "type": "object",
+        "properties": {
+          "attribute": { "type": "string", "const": "data-method" },
+          "value": { "type": "string" }
+        }
+      },
+      "helpers": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": [
+            "toUpperCase", "toLowerCase", "formatDate", "if", "forEach",
+            "range", "sum", "avg", "stringFormat", "debounce"
+          ]
+        }
+      },
+      "globalState": {
+        "type": "object",
+        "properties": {
+          "accessSyntax": { "type": "string", "const": "$global" }
+        }
+      }
+    },
+    "definitions": {
+      "childElements": {
+        "type": "array",
+        "items": {
+          "oneOf": [
+            { "type": "string" },
+            { "$ref": "#/properties/componentDefinition" },
+            { "$ref": "#/properties/subcomponents" },
+            { "$ref": "#/properties/styling" },
+            { "$ref": "#/properties/scripts" }
+          ]
+        }
+      }
+    }
+  }
