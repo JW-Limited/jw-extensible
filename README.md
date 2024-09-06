@@ -60,6 +60,7 @@ Whether you're building a small interactive element or a large-scale web platfor
 8. **Global State**: A shared data store accessible across components.
 
 # Syntax Definition
+Cmpiler Rules: ([Here](https://github.com/JW-Limited/jw-extensible/blob/main/%24compiler_rules/rules.json))
 ## 1. Component Definition
 
 Components are defined using HTML-like syntax with special attributes and tags.
